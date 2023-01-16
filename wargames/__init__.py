@@ -1,4 +1,4 @@
-"""Top-level package for wargames project""
+"""Top-level package for wargames project"""
 
 __app_name__ = "wargames"
 __version__ = "0.1.0"

@@ -1,0 +1,22 @@
+{
+  "games": {
+    "bandit": {
+      "levels": {
+        "0": {
+          "username": "bandit0",
+          "passwd": "bandit0",
+          "description": "Level 0 password provided"
+        }
+      }
+    },
+    "natas": {
+      "levels": {
+        "0": {
+          "username": "natas0",
+          "passwd": "natas0",
+          "description": "Level 0 password provided"
+        }
+      }
+    }
+  }
+}
