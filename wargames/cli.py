@@ -1,4 +1,5 @@
 from pathlib import Path
+from json import dumps
 from typing import Optional, Dict, Any
 
 import typer
@@ -11,13 +12,18 @@ from wargames import (
     database,
     wargames
 )
+from wargames.formatting import pprint
 
 app = typer.Typer()
+
+# =========================
+#          Commands
+# =========================
 
 @app.command()
 def init(
         db_path: str = typer.Option(
-            str(database.DEFAULT_DB_FILE_PATH),
+            str(database.DEFAULT_DB_PATH),
             "--db-path",
             "-db",
             prompt="wargames passwords database location"
@@ -41,6 +47,7 @@ def init(
             f"The wargames passwords database is {db_path}",
             fg=typer.colors.GREEN
         )
+
         
 @app.command()
 def list() -> Dict[str, Any]:
@@ -53,10 +60,9 @@ def list() -> Dict[str, Any]:
         )
         raise typer.Exit(1)
     else:
-        print(data)
+        pprint(data)
         return data
-    
-    
+        
         
 @app.command()
 def add(level: str = typer.Argument(...),
@@ -76,7 +82,11 @@ def add(level: str = typer.Argument(...),
             f"Info for level {level_info['level']} was added",
             fg=typer.colors.GREEN,
         )
-        
+
+
+# =========================
+#          Functions
+# =========================
 def get_controller() -> wargames.WargamesController:
     if config.CONFIG_FILE_PATH.exists():
         db_path = database.get_database_path(config.CONFIG_FILE_PATH)
@@ -95,13 +105,18 @@ def get_controller() -> wargames.WargamesController:
         )
         raise typer.Exit(1)
 
-        
 
 def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
         raise typer.Exit()
     
+
+# =========================
+#          Main
+# =========================
+
+
 @app.callback()
 def main(
         version: Optional[bool] = typer.Option(

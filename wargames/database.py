@@ -1,13 +1,13 @@
-import configparser
+import os
 import json
+import configparser
 from pathlib import Path
 from typing import Any, Dict, NamedTuple
 
+from wargames.validation import validate_game
 from wargames import DB_READ_ERROR, DB_WRITE_ERROR, JSON_ERROR, SUCCESS
 
-DEFAULT_DB_FILE_PATH = Path.home().joinpath(
-    "." + Path.home().stem + "_wargames.json"
-)
+DEFAULT_DB_PATH = Path.home() / "wargames_database/"
 
 def get_database_path(config_file: Path) -> Path:
     config_parser = configparser.ConfigParser()
@@ -16,21 +16,26 @@ def get_database_path(config_file: Path) -> Path:
 
 def init_database(db_path: Path) -> int:
     try:
-        db_path.write_text("{}")
+        db_path.mkdir(exist_ok=True)
         return SUCCESS
     except OSError:
         return DB_WRITE_ERROR
 
 
 class DBResponse(NamedTuple):
-    level_info: Dict[str, Any]
+    response: Any
     error: int
 
 class DatabaseHandler:
     def __init__(self, db_path: Path) -> None:
         self._db_path = db_path
     
-    def read(self) -> DBResponse:
+    def read(self, level: str, game: str = None) -> DBResponse:
+        _GAME = None
+        if game:
+            _GAME = validate_game(game)
+        else:
+            _GAME = os.environ['WARGAMES_CURRENT_GAME']
         try:
             with self._db_path.open("r") as db:
                 try:
